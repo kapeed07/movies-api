@@ -3,52 +3,61 @@ const router = express.Router();
 
 module.exports = (Director) => {
   // create new director
-  router.post('/api/directors', (req, res) => {
-    let director = req.body;
-    Director.create(director).then(() => {
-      res.redirect('/api/directors');
-    });
+  router.post('/', (req, res) => {
+      let director = req.body;
+      Director.create(director).then((data) => {
+        res.send(data.dataValues);
+      });
   });
 
-  // read all director
-  router.get('/api/directors', (req, res) => {
-    Director.findAll().then(directors => {
-      res.send(directors)
-    });
-  });
-
-  // read single director with given id
-  router.get('/api/directors/:id', (req, res) => {
-    let id = req.params.id;
-    Director.findByPk(id).then(director => {
+  // read all directors
+  router.get('/', (req, res) => {
+    Director.findAll()
+    .then(director => {
       res.send(director)
     });
   });
 
-  // update single director with given id
-  router.put('/api/directors/:id', (req, res) => {
+  // read single director with given id
+  router.get('/:id', (req, res) => {
     let id = req.params.id;
-    let director = req.body;
+    Director.findByPk(id)
+    .then(director => {
+      res.send(director)
+    });
+  });
 
+  // update director with given id
+  router.put('/:id', (req, res) => {
+    let id = req.params.id;
+    console.log(id);
+    let director = req.body;
+    console.log(director);
     Director.update(director, {
       where: {
         'id': id
       }
-    })
-    .then(() => {
-      res.redirect(`/api/directors/${id}`);
+    }).then(() => {      
+      Director.findByPk(id).then(director => {
+        res.send(director)
+      });
     });
   });
-  // delete single director with given id
-  router.delete('/api/directors/:id', (req, res) => {
+
+  // delete director with given id
+  router.delete('/:id', (req, res) => {
     let id = req.params.id;
-    Director.destroy({
-      where: {
-        'id': id
-      }
-    })
-    .then(() => {
-      res.redirect('/api/directors');
+    let deletedDirector;
+    Director.findByPk(id).then((director) => {
+      deletedDirector = director;
+    }).then(() => {
+      Director.destroy({
+        where: {
+            'id': id
+        }
+      }).then(() => {
+        res.send(deletedDirector.dataValues);
+      });
     });
   });
 

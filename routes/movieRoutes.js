@@ -3,15 +3,15 @@ const router = express.Router();
 
 module.exports = (Movie) => {
   // create new movie
-  router.post('/api/movies', (req, res) => {
+  router.post('/', (req, res) => {
       let movie = req.body;
-      Movie.create(movie).then(() => {
-          res.redirect('/api/movies');
+      Movie.create(movie).then((data) => {
+        res.send(data.dataValues);
       });
   });
 
   // read all movies
-  router.get('/api/movies', (req, res) => {
+  router.get('/', (req, res) => {
     Movie.findAll()
     .then(movies => {
       res.send(movies)
@@ -19,7 +19,7 @@ module.exports = (Movie) => {
   });
 
   // read single movie with given id
-  router.get('/api/movies/:id', (req, res) => {
+  router.get('/:id', (req, res) => {
     let id = req.params.id;
     Movie.findByPk(id)
     .then(movie => {
@@ -28,29 +28,34 @@ module.exports = (Movie) => {
   });
 
   // update movie with given id
-  router.put('/api/movies/:id', (req, res) => {
+  router.put('/:id', (req, res) => {
     let id = req.params.id;
     let movie = req.body;
-
     Movie.update(movie, {
       where: {
         'id': id
       }
-    })
-    .then(() => {
-      res.redirect(`/api/movies/${id}`);
+    }).then((id) => {
+      Movie.findByPk(id).then(movie => {
+        res.send(movie)
+      });
     });
   });
 
   // delete movie with given id
-  router.delete('/api/movies/:id', (req, res) => {
+  router.delete('/:id', (req, res) => {
     let id = req.params.id;
-    Movie.destroy({
-    where: {
-        'id': id
-    }
+    let deletedMovie;
+    Movie.findByPk(id).then((movie) => {
+      deletedMovie = movie;
     }).then(() => {
-      res.redirect('/api/movies');
+      Movie.destroy({
+        where: {
+            'id': id
+        }
+      }).then(() => {
+        res.send(deletedMovie.dataValues);
+      });
     });
   });
   return router;

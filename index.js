@@ -15,8 +15,8 @@ const movieRoutes = require('./routes/movieRoutes')(Movie);
 const directorRoutes = require('./routes/directorRoutes')(Director);
 
 app.use(express.json());
-app.use(movieRoutes);
-app.use(directorRoutes);
+app.use('/api/movies', movieRoutes);
+app.use('/api/directors', directorRoutes);
 
 // server starting function
 app.listen(port, () => {
