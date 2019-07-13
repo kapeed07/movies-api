@@ -1,62 +1,94 @@
 const express = require('express');
+
 const router = express.Router();
+
+const Joi = require('@hapi/joi');
+const directorJoi = require('../joiSchemas/director');
 const Director = require('../models/directorModel');
 
 
-// create new director
+// ======> create new director
 router.post('/', (req, res) => {
-  let director = req.body;
-  Director.create(director).then((data) => {
+  const director = req.body;
+  let result = Joi.validate(director, directorJoi.all);
+
+  // return if fails to validate
+  if (result.error) {
+    return res.status(400).send(result.error.details[0].message);
+  }
+
+  result = result.value;  
+  Director.create(result).then((data) => {
     res.send(data.dataValues);
   });
 });
 
-// read all directors
+// ======> read all directors
 router.get('/', (req, res) => {
   Director.findAll().then((director) => {
     res.send(director);
   });
 });
 
-// read single director with given id
+// ======> read single director with given id
 router.get('/:id', (req, res) => {
-  let id = req.params.id;
-  Director.findByPk(id).then((director) => {
+  const { id } = req.params;
+
+  let result = Joi.validate({ id }, directorJoi.id);
+
+  // return if fails to validate
+  if (result.error) {
+    return res.status(400).send(result.error.details[0].message);
+  }
+
+  result = result.value;
+  Director.findByPk(result.id).then((director) => {
     res.send(director);
   });
 });
 
-// update director with given id
+// ======> update director with given id
 router.put('/:id', (req, res) => {
-  let id = req.params.id;
-  console.log(id);
-  let director = req.body;
-  console.log(director);
-  Director.update(director, {
+  const director = req.body;
+  const { id } = req.params;
+  const validatedDirector = Joi.validate(director, directorJoi.all);
+  const validatedId = Joi.validate({ id }, directorJoi.id);
+
+  // return if fails to validate
+  if (validatedDirector.error) {
+    return res.status(400).send(validatedDirector.error.details[0].message);
+  }
+  if (validatedId.error) {
+    return res.status(400).send(validatedId.error.details[0].message);
+  }
+
+  const result = validatedDirector.value;
+  Director.update(result, {
     where: {
-      'id': id,
+      id,
     },
-  }).then(() => {      
-    Director.findByPk(id).then((director) => {
-      res.send(director);
-    });
+  }).then(() => {
+    res.send(result);
   });
 });
 
-// delete director with given id
+// ======> delete director with given id
 router.delete('/:id', (req, res) => {
-  let id = req.params.id;
-  let deletedDirector;
-  Director.findByPk(id).then((director) => {
-    deletedDirector = director;
-  }).then(() => {
-    Director.destroy({
-      where: {
-          'id': id
-      }
-    }).then(() => {
-      res.send(deletedDirector.dataValues);
-    });
+  const { id } = req.params;
+  let result = Joi.validate({ id }, directorJoi.id);
+
+  // return if fails to validate
+  if (result.error) {
+    return res.status(400).send(result.error.details[0].message);
+  }
+
+  result = result.value;
+  Director.destroy({
+    where: {
+      id,
+    },
+  }).then((count) => {
+    count === 0 ? res.sendStatus(400) : res.sendStatus(200);
   });
 });
 

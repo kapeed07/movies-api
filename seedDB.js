@@ -6,11 +6,12 @@ const Director = require('./models/directorModel');
 
 const Movie = require('./models/movieModel');
 
-Director.hasMany(Movie);
+
+// Director.hasMany(Movie);
 
 // seed DB
 sequelize.sync({
-  logging: console.log,
+  logging: false,
   force: true,
 }).then(() => {
   console.log('Connection has been established successfully.');
@@ -22,6 +23,7 @@ sequelize.sync({
         Name: directorName,
       },
     }).then((newDirector) => {
+      // console.log(newDirector[0].dataValues);
       delete movie.Director;
       movie.directorId = newDirector[0].dataValues.id;
       Movie.create(movie);

@@ -3,36 +3,38 @@ const Sequelize = require('sequelize');
 const sequelize = require('../dbConfig');
 
 const Movie = sequelize.define('movie', {
-  'Title': {
-  type: Sequelize.STRING,
+  Title: {
+    type: Sequelize.STRING,
   },
-  'Description': {
-  type: Sequelize.STRING,
+  Description: {
+    type: Sequelize.STRING,
   },
-  'Runtime': {
-  type: Sequelize.INTEGER,
+  Runtime: {
+    type: Sequelize.INTEGER,
   },
-  'Genre': {
-  type: Sequelize.STRING,
+  Genre: {
+    type: Sequelize.STRING,
   },
-  'Rating': {
-  type: Sequelize.INTEGER,
+  Rating: {
+    type: Sequelize.INTEGER,
   },
-  'Metascore': {
-  type: Sequelize.INTEGER,
+  Metascore: {
+    type: Sequelize.INTEGER,
   },
-  'Votes': {
-  type: Sequelize.INTEGER,
+  Votes: {
+    type: Sequelize.INTEGER,
   },
-  'Gross_Earning_in_Mil': {
-  type: Sequelize.INTEGER,
+  Gross_Earning_in_Mil: {
+    type: Sequelize.INTEGER,
   },
-  'Actor': {
-  type: Sequelize.STRING,
+  directorId: {
+    type: Sequelize.INTEGER,
   },
-  'Year': {
-  type: Sequelize.INTEGER,
-  }
+  Actor: {
+    type: Sequelize.STRING,
+  },
+  Year: {
+    type: Sequelize.INTEGER,
+  },
 });
-
 module.exports = Movie;
